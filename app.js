@@ -318,6 +318,11 @@ document.getElementById('btn-start').addEventListener('click', () => {
 });
 
 window.addEventListener('keydown', (e) => {
+    if (e.repeat) {
+        e.preventDefault();
+        return;
+    }
+    
     if (document.getElementById('welcome-modal').classList.contains('hidden') === false) {
         return;
     }
