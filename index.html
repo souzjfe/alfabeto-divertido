@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alfabeto Divertido - Teclado Infantil</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div id="app-container">
+        <header>
+            <div class="logo">
+                <span class="logo-icon">🎨</span>
+                <h1>Alfabeto Divertido</h1>
+            </div>
+            <div class="controls">
+                <button id="btn-music" class="control-btn" aria-label="Música de Fundo">
+                    <span class="btn-icon">🎵</span>
+                    <span class="btn-text">Música: Ligar</span>
+                </button>
+                <button id="btn-fullscreen" class="control-btn" aria-label="Tela Cheia">
+                    <span class="btn-icon">📺</span>
+                    <span class="btn-text">Tela Cheia</span>
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <div id="stage-card" class="stage">
+                <div class="stage-background-glow"></div>
+                <div id="stage-particles"></div>
+                <div class="stage-content">
+                    <div id="stage-letter" class="stage-letter">⌨️</div>
+                    <div id="stage-emoji" class="stage-emoji">✨</div>
+                    <div id="stage-word" class="stage-word">APERTE UMA LETRA</div>
+                </div>
+            </div>
+
+            <div class="keyboard-section">
+                <div class="keyboard-grid" id="virtual-keyboard"></div>
+            </div>
+        </main>
+
+        <div id="invalid-key-toast" class="toast hidden">
+            <span class="toast-icon">⚠️</span>
+            <span class="toast-message">Aperte uma letra do teclado (A até Z)!</span>
+        </div>
+
+        <div id="welcome-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-animation">🎈</div>
+                <h2>Olá, Amiguinho!</h2>
+                <p>Clique no botão abaixo para começar a brincar com as letras e os sons!</p>
+                <button id="btn-start" class="start-btn">Começar Brincadeira</button>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
