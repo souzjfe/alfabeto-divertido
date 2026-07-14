@@ -1,13 +1,13 @@
 const alphabet = {
     '1': { word: 'UM', emoji: '🦄', color: '#ffb703' },
-    '2': { word: 'DOIS', emoji: '🍒', color: '#ff7096' },
-    '3': { word: 'TRÊS', emoji: '📐', color: '#a2d2ff' },
+    '2': { word: 'DOIS', emoji: '🍎', color: '#ff7096' },
+    '3': { word: 'TRÊS', emoji: '🎈', color: '#a2d2ff' },
     '4': { word: 'QUATRO', emoji: '🍀', color: '#06d6a0' },
-    '5': { word: 'CINCO', emoji: '🖐️', color: '#70e000' },
+    '5': { word: 'CINCO', emoji: '⭐', color: '#70e000' },
     '6': { word: 'SEIS', emoji: '🎲', color: '#ffe5ec' },
-    '7': { word: 'SETE', emoji: '🌈', color: '#ffd6ff' },
+    '7': { word: 'SETE', emoji: '🍭', color: '#ffd6ff' },
     '8': { word: 'OITO', emoji: '🐙', color: '#90e0ef' },
-    '9': { word: 'NOVE', emoji: '🎈', color: '#ef476f' },
+    '9': { word: 'NOVE', emoji: '🍬', color: '#ef476f' },
     '0': { word: 'ZERO', emoji: '🥚', color: '#fbc490' },
     'A': { word: 'ABELHA', emoji: '🐝', color: '#ffd166' },
     'B': { word: 'BORBOLETA', emoji: '🦋', color: '#06d6a0' },
@@ -204,8 +204,26 @@ function selectLetter(letter) {
     void stageLetter.offsetWidth;
     
     stageLetter.textContent = letter;
-    stageEmoji.textContent = item.emoji;
     stageWord.textContent = item.word;
+    const count = parseInt(letter);
+    if (!isNaN(count)) {
+        if (count === 0) {
+            stageEmoji.textContent = '💨';
+            stageEmoji.style.fontSize = '8rem';
+        } else {
+            stageEmoji.textContent = Array(count).fill(item.emoji).join(' ');
+            if (count === 1) {
+                stageEmoji.style.fontSize = '10rem';
+            } else if (count <= 4) {
+                stageEmoji.style.fontSize = '6rem';
+            } else {
+                stageEmoji.style.fontSize = '4.5rem';
+            }
+        }
+    } else {
+        stageEmoji.textContent = item.emoji;
+        stageEmoji.style.fontSize = '10rem';
+    }
     
     stageLetter.classList.add('animate-pop');
     stageEmoji.classList.add('animate-pop');
