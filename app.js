@@ -227,7 +227,10 @@ function selectLetter(letter) {
 }
 
 function showWarning() {
-    currentlySpeakingLetter = null;
+    if (currentlySpeakingLetter === 'WARNING') {
+        return;
+    }
+    currentlySpeakingLetter = 'WARNING';
     if (currentSpeechAudio) {
         currentSpeechAudio.pause();
         currentSpeechAudio = null;
@@ -235,7 +238,16 @@ function showWarning() {
     playWarningSound();
     const ttsUrl = 'audio/warning.mp3';
     currentSpeechAudio = new Audio(ttsUrl);
-    currentSpeechAudio.play().catch(() => {});
+    currentSpeechAudio.addEventListener('ended', () => {
+        if (currentlySpeakingLetter === 'WARNING') {
+            currentlySpeakingLetter = null;
+        }
+    });
+    currentSpeechAudio.play().catch(() => {
+        if (currentlySpeakingLetter === 'WARNING') {
+            currentlySpeakingLetter = null;
+        }
+    });
     const toast = document.getElementById('invalid-key-toast');
     toast.classList.remove('hidden');
     const toastClone = toast.cloneNode(true);
