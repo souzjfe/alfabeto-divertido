@@ -14,6 +14,16 @@ except ImportError:
 import asyncio
 
 alphabet = {
+    '1': '1 de um.',
+    '2': '2 de dois.',
+    '3': '3 de três.',
+    '4': '4 de quatro.',
+    '5': '5 de cinco.',
+    '6': '6 de seis.',
+    '7': '7 de sete.',
+    '8': '8 de oito.',
+    '9': '9 de nove.',
+    '0': '0 de zero.',
     'A': 'A de abelha.',
     'B': 'B de borboleta.',
     'C': 'C de cachorro.',
@@ -40,7 +50,7 @@ alphabet = {
     'X': 'X de xícara.',
     'Y': 'Y de yoga.',
     'Z': 'Z de zebra.',
-    'WARNING': 'Aperte uma letra!'
+    'WARNING': 'Aperte uma letra ou número!'
 }
 
 async def generate():

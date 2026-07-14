@@ -1,4 +1,14 @@
 const alphabet = {
+    '1': { word: 'UM', emoji: '🦄', color: '#ffb703' },
+    '2': { word: 'DOIS', emoji: '🍒', color: '#ff7096' },
+    '3': { word: 'TRÊS', emoji: '📐', color: '#a2d2ff' },
+    '4': { word: 'QUATRO', emoji: '🍀', color: '#06d6a0' },
+    '5': { word: 'CINCO', emoji: '🖐️', color: '#70e000' },
+    '6': { word: 'SEIS', emoji: '🎲', color: '#ffe5ec' },
+    '7': { word: 'SETE', emoji: '🌈', color: '#ffd6ff' },
+    '8': { word: 'OITO', emoji: '🐙', color: '#90e0ef' },
+    '9': { word: 'NOVE', emoji: '🎈', color: '#ef476f' },
+    '0': { word: 'ZERO', emoji: '🥚', color: '#fbc490' },
     'A': { word: 'ABELHA', emoji: '🐝', color: '#ffd166' },
     'B': { word: 'BORBOLETA', emoji: '🦋', color: '#06d6a0' },
     'C': { word: 'CACHORRO', emoji: '🐶', color: '#118ab2' },
@@ -33,6 +43,7 @@ let musicPlaying = false;
 let ptVoice = null;
 let toastTimeout = null;
 let currentSpeechAudio = null;
+let currentlySpeakingLetter = null;
 
 const melodyNotes = [
     60, 64, 67, 72,
@@ -152,9 +163,15 @@ function speakLetter(letter, word) {
         currentSpeechAudio = null;
     }
     window.speechSynthesis.cancel();
+    currentlySpeakingLetter = letter;
     const text = `${letter} de ${word.toLowerCase()}.`;
     const ttsUrl = `audio/${letter.toLowerCase()}.mp3`;
     currentSpeechAudio = new Audio(ttsUrl);
+    currentSpeechAudio.addEventListener('ended', () => {
+        if (currentlySpeakingLetter === letter) {
+            currentlySpeakingLetter = null;
+        }
+    });
     currentSpeechAudio.play().catch(() => {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'pt-BR';
@@ -163,6 +180,16 @@ function speakLetter(letter, word) {
         }
         utterance.rate = 0.65;
         utterance.pitch = 1.0;
+        utterance.onend = () => {
+            if (currentlySpeakingLetter === letter) {
+                currentlySpeakingLetter = null;
+            }
+        };
+        utterance.onerror = () => {
+            if (currentlySpeakingLetter === letter) {
+                currentlySpeakingLetter = null;
+            }
+        };
         window.speechSynthesis.speak(utterance);
     });
 }
@@ -195,6 +222,9 @@ function createParticles() {
 }
 
 function selectLetter(letter) {
+    if (currentlySpeakingLetter === letter) {
+        return;
+    }
     const item = alphabet[letter.toUpperCase()];
     if (!item) return;
     
@@ -232,6 +262,7 @@ function selectLetter(letter) {
 }
 
 function showWarning() {
+    currentlySpeakingLetter = null;
     if (currentSpeechAudio) {
         currentSpeechAudio.pause();
         currentSpeechAudio = null;
@@ -241,7 +272,7 @@ function showWarning() {
     const ttsUrl = 'audio/warning.mp3';
     currentSpeechAudio = new Audio(ttsUrl);
     currentSpeechAudio.play().catch(() => {
-        const utterance = new SpeechSynthesisUtterance('Aperte uma letra!');
+        const utterance = new SpeechSynthesisUtterance('Aperte uma letra ou número!');
         utterance.lang = 'pt-BR';
         if (ptVoice) {
             utterance.voice = ptVoice;
