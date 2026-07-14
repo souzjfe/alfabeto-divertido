@@ -232,13 +232,28 @@ function selectLetter(letter) {
 }
 
 function showWarning() {
+    if (currentSpeechAudio) {
+        currentSpeechAudio.pause();
+        currentSpeechAudio = null;
+    }
+    window.speechSynthesis.cancel();
     playWarningSound();
+    const ttsUrl = 'audio/warning.mp3';
+    currentSpeechAudio = new Audio(ttsUrl);
+    currentSpeechAudio.play().catch(() => {
+        const utterance = new SpeechSynthesisUtterance('Aperte uma letra!');
+        utterance.lang = 'pt-BR';
+        if (ptVoice) {
+            utterance.voice = ptVoice;
+        }
+        utterance.rate = 0.65;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+    });
     const toast = document.getElementById('invalid-key-toast');
     toast.classList.remove('hidden');
-    
     const toastClone = toast.cloneNode(true);
     toast.parentNode.replaceChild(toastClone, toast);
-    
     if (toastTimeout) clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => {
         toastClone.classList.add('hidden');

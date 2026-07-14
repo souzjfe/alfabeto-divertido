@@ -39,7 +39,8 @@ alphabet = {
     'W': 'W de wi-fi.',
     'X': 'X de xícara.',
     'Y': 'Y de yoga.',
-    'Z': 'Z de zebra.'
+    'Z': 'Z de zebra.',
+    'WARNING': 'Aperte uma letra!'
 }
 
 async def generate():
