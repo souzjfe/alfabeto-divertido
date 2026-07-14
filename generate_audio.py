@@ -29,7 +29,7 @@ alphabet = {
     'C': 'C de cachorro.',
     'D': 'D de dinossauro.',
     'E': 'E de elefante.',
-    'F': 'F de foca.',
+    'F': 'F de flor.',
     'G': 'G de gato.',
     'H': 'H de hipopótamo.',
     'I': 'I de ilha.',

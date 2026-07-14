@@ -14,7 +14,7 @@ const alphabet = {
     'C': { word: 'CACHORRO', emoji: '🐶', color: '#118ab2' },
     'D': { word: 'DINOSSAURO', emoji: '🦖', color: '#ef476f' },
     'E': { word: 'ELEFANTE', emoji: '🐘', color: '#8338ec' },
-    'F': { word: 'FOCA', emoji: '🦭', color: '#3a86c8' },
+    'F': { word: 'FLOR', emoji: '🌸', color: '#3a86c8' },
     'G': { word: 'GATO', emoji: '🐱', color: '#ffb703' },
     'H': { word: 'HIPOPÓTAMO', emoji: '🦛', color: '#a2d2ff' },
     'I': { word: 'ILHA', emoji: '🏝️', color: '#ffc8dd' },
