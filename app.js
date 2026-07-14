@@ -40,7 +40,6 @@ const alphabet = {
 let audioCtx = null;
 let musicInterval = null;
 let musicPlaying = false;
-let ptVoice = null;
 let toastTimeout = null;
 let currentSpeechAudio = null;
 let currentlySpeakingLetter = null;
@@ -144,27 +143,12 @@ function playWarningSound() {
     osc.stop(audioCtx.currentTime + 0.25);
 }
 
-function loadVoices() {
-    const voices = window.speechSynthesis.getVoices();
-    const ptBRVoices = voices.filter(v => v.lang.startsWith('pt-BR'));
-    ptVoice = ptBRVoices.find(v => v.name.includes('Google') || v.name.includes('Siri') || v.name.includes('Natural')) ||
-              ptBRVoices.find(v => v.name.includes('Luciana') || v.name.includes('Felipe') || v.name.includes('Daniel')) ||
-              ptBRVoices[0] ||
-              voices.find(v => v.lang.startsWith('pt-')) ||
-              voices[0];
-}
-
-window.speechSynthesis.onvoiceschanged = loadVoices;
-loadVoices();
-
 function speakLetter(letter, word) {
     if (currentSpeechAudio) {
         currentSpeechAudio.pause();
         currentSpeechAudio = null;
     }
-    window.speechSynthesis.cancel();
     currentlySpeakingLetter = letter;
-    const text = `${letter} de ${word.toLowerCase()}.`;
     const ttsUrl = `audio/${letter.toLowerCase()}.mp3`;
     currentSpeechAudio = new Audio(ttsUrl);
     currentSpeechAudio.addEventListener('ended', () => {
@@ -172,26 +156,7 @@ function speakLetter(letter, word) {
             currentlySpeakingLetter = null;
         }
     });
-    currentSpeechAudio.play().catch(() => {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'pt-BR';
-        if (ptVoice) {
-            utterance.voice = ptVoice;
-        }
-        utterance.rate = 0.65;
-        utterance.pitch = 1.0;
-        utterance.onend = () => {
-            if (currentlySpeakingLetter === letter) {
-                currentlySpeakingLetter = null;
-            }
-        };
-        utterance.onerror = () => {
-            if (currentlySpeakingLetter === letter) {
-                currentlySpeakingLetter = null;
-            }
-        };
-        window.speechSynthesis.speak(utterance);
-    });
+    currentSpeechAudio.play().catch(() => {});
 }
 
 function createParticles() {
@@ -267,20 +232,10 @@ function showWarning() {
         currentSpeechAudio.pause();
         currentSpeechAudio = null;
     }
-    window.speechSynthesis.cancel();
     playWarningSound();
     const ttsUrl = 'audio/warning.mp3';
     currentSpeechAudio = new Audio(ttsUrl);
-    currentSpeechAudio.play().catch(() => {
-        const utterance = new SpeechSynthesisUtterance('Aperte uma letra ou número!');
-        utterance.lang = 'pt-BR';
-        if (ptVoice) {
-            utterance.voice = ptVoice;
-        }
-        utterance.rate = 0.65;
-        utterance.pitch = 1.0;
-        window.speechSynthesis.speak(utterance);
-    });
+    currentSpeechAudio.play().catch(() => {});
     const toast = document.getElementById('invalid-key-toast');
     toast.classList.remove('hidden');
     const toastClone = toast.cloneNode(true);
