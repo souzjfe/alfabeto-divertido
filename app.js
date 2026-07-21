@@ -43,6 +43,7 @@ let musicPlaying = false;
 let toastTimeout = null;
 let currentSpeechAudio = null;
 let currentlySpeakingLetter = null;
+let lastKeyWasM = false;
 
 const melodyNotes = [
     60, 64, 67, 72,
@@ -203,34 +204,44 @@ function selectLetter(letter) {
     stageWord.classList.remove('animate-pop');
     void stageLetter.offsetWidth;
     
+    let isMelissaFive = lastKeyWasM && letter === '5';
+    
     stageLetter.textContent = letter;
-    stageWord.textContent = item.word;
-    const count = parseInt(letter);
-    if (!isNaN(count)) {
-        if (count === 0) {
-            stageEmoji.textContent = '💨';
-            stageEmoji.style.fontSize = '8rem';
-        } else {
-            stageEmoji.textContent = Array(count).fill(item.emoji).join(' ');
-            if (count === 1) {
-                stageEmoji.style.fontSize = '10rem';
-            } else if (count <= 4) {
-                stageEmoji.style.fontSize = '6rem';
-            } else {
-                stageEmoji.style.fontSize = '4.5rem';
-            }
-        }
+    
+    if (isMelissaFive) {
+        stageWord.textContent = '5 MELISSAS';
+        stageEmoji.textContent = Array(5).fill(alphabet['M'].emoji).join(' ');
+        stageEmoji.style.fontSize = '4.5rem';
+        document.body.style.backgroundColor = alphabet['M'].color;
+        stageCard.style.setProperty('--theme-color', alphabet['M'].color);
     } else {
-        stageEmoji.textContent = item.emoji;
-        stageEmoji.style.fontSize = '10rem';
+        stageWord.textContent = item.word;
+        const count = parseInt(letter);
+        if (!isNaN(count)) {
+            if (count === 0) {
+                stageEmoji.textContent = '💨';
+                stageEmoji.style.fontSize = '8rem';
+            } else {
+                stageEmoji.textContent = Array(count).fill(item.emoji).join(' ');
+                if (count === 1) {
+                    stageEmoji.style.fontSize = '10rem';
+                } else if (count <= 4) {
+                    stageEmoji.style.fontSize = '6rem';
+                } else {
+                    stageEmoji.style.fontSize = '4.5rem';
+                }
+            }
+        } else {
+            stageEmoji.textContent = item.emoji;
+            stageEmoji.style.fontSize = '10rem';
+        }
+        document.body.style.backgroundColor = item.color;
+        stageCard.style.setProperty('--theme-color', item.color);
     }
     
     stageLetter.classList.add('animate-pop');
     stageEmoji.classList.add('animate-pop');
     stageWord.classList.add('animate-pop');
-    
-    document.body.style.backgroundColor = item.color;
-    stageCard.style.setProperty('--theme-color', item.color);
     
     document.querySelectorAll('.key-card').forEach(card => {
         if (card.dataset.key === letter) {
@@ -240,11 +251,24 @@ function selectLetter(letter) {
     });
     
     playBubbleSound();
-    speakLetter(letter, item.word);
+    
+    if (isMelissaFive) {
+        speakLetter('5_melissas', '5 MELISSAS');
+    } else {
+        speakLetter(letter, item.word);
+    }
+    
     createParticles();
+    
+    if (letter.toUpperCase() === 'M') {
+        lastKeyWasM = true;
+    } else {
+        lastKeyWasM = false;
+    }
 }
 
 function showWarning() {
+    lastKeyWasM = false;
     if (currentlySpeakingLetter === 'WARNING') {
         return;
     }

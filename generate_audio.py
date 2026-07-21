@@ -19,6 +19,7 @@ alphabet = {
     '3': 'Três.',
     '4': 'Quatro.',
     '5': 'Cinco.',
+    '5_melissas': 'Cinco Melissas.',
     '6': 'Seis.',
     '7': 'Sete.',
     '8': 'Oito.',
