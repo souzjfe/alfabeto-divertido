@@ -37,13 +37,42 @@ const alphabet = {
     'Z': { word: 'ZEBRA', emoji: '🦓', color: '#cfdbd5' }
 };
 
+const plurals = {
+    'ABELHA': 'ABELHAS',
+    'BORBOLETA': 'BORBOLETAS',
+    'CACHORRO': 'CACHORROS',
+    'DINOSSAURO': 'DINOSSAUROS',
+    'ELEFANTE': 'ELEFANTES',
+    'FLOR': 'FLORES',
+    'GATO': 'GATOS',
+    'HIPOPÓTAMO': 'HIPOPÓTAMOS',
+    'ILHA': 'ILHAS',
+    'JACARÉ': 'JACARÉS',
+    'KIWI': 'KIWIS',
+    'LEÃO': 'LEÕES',
+    'MELISSA': 'MELISSAS',
+    'NUVEM': 'NUVENS',
+    'OVELHA': 'OVELHAS',
+    'PEIXE': 'PEIXES',
+    'QUEIJO': 'QUEIJOS',
+    'ROBÔ': 'ROBÔS',
+    'SOL': 'SÓIS',
+    'TARTARUGA': 'TARTARUGAS',
+    'ULISSES': 'ULISSES',
+    'VACA': 'VACAS',
+    'WI-FI': 'WI-FIS',
+    'XÍCARA': 'XÍCARAS',
+    'YOGA': 'YOGAS',
+    'ZEBRA': 'ZEBRAS'
+};
+
 let audioCtx = null;
 let musicInterval = null;
 let musicPlaying = false;
 let toastTimeout = null;
 let currentSpeechAudio = null;
 let currentlySpeakingLetter = null;
-let lastKeyWasM = false;
+let lastLetterSelected = null;
 
 const melodyNotes = [
     60, 64, 67, 72,
@@ -204,20 +233,39 @@ function selectLetter(letter) {
     stageWord.classList.remove('animate-pop');
     void stageLetter.offsetWidth;
     
-    let isMelissaFive = lastKeyWasM && letter === '5';
+    const count = parseInt(letter);
+    const isNumber = !isNaN(count);
+    
+    let isCombination = isNumber && lastLetterSelected !== null;
+    let prevLetter = lastLetterSelected;
     
     stageLetter.textContent = letter;
     
-    if (isMelissaFive) {
-        stageWord.textContent = '5 MELISSAS';
-        stageEmoji.textContent = Array(5).fill(alphabet['M'].emoji).join(' ');
-        stageEmoji.style.fontSize = '4.5rem';
-        document.body.style.backgroundColor = alphabet['M'].color;
-        stageCard.style.setProperty('--theme-color', alphabet['M'].color);
+    if (isCombination) {
+        const itemLetter = alphabet[prevLetter];
+        const pluralWord = plurals[prevLetter];
+        const wordText = count === 1 ? itemLetter.word : pluralWord;
+        stageWord.textContent = count + ' ' + wordText;
+        
+        if (count === 0) {
+            stageEmoji.textContent = '💨';
+            stageEmoji.style.fontSize = '8rem';
+        } else {
+            stageEmoji.textContent = Array(count).fill(itemLetter.emoji).join(' ');
+            if (count === 1) {
+                stageEmoji.style.fontSize = '10rem';
+            } else if (count <= 4) {
+                stageEmoji.style.fontSize = '6rem';
+            } else {
+                stageEmoji.style.fontSize = '4.5rem';
+            }
+        }
+        
+        document.body.style.backgroundColor = itemLetter.color;
+        stageCard.style.setProperty('--theme-color', itemLetter.color);
     } else {
         stageWord.textContent = item.word;
-        const count = parseInt(letter);
-        if (!isNaN(count)) {
+        if (isNumber) {
             if (count === 0) {
                 stageEmoji.textContent = '💨';
                 stageEmoji.style.fontSize = '8rem';
@@ -252,23 +300,23 @@ function selectLetter(letter) {
     
     playBubbleSound();
     
-    if (isMelissaFive) {
-        speakLetter('5_melissas', '5 MELISSAS');
+    if (isCombination) {
+        speakLetter(count + '_' + prevLetter.toLowerCase(), stageWord.textContent);
     } else {
         speakLetter(letter, item.word);
     }
     
     createParticles();
     
-    if (letter.toUpperCase() === 'M') {
-        lastKeyWasM = true;
+    if (!isNumber) {
+        lastLetterSelected = letter.toUpperCase();
     } else {
-        lastKeyWasM = false;
+        lastLetterSelected = null;
     }
 }
 
 function showWarning() {
-    lastKeyWasM = false;
+    lastLetterSelected = null;
     if (currentlySpeakingLetter === 'WARNING') {
         return;
     }
