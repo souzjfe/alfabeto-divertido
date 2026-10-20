@@ -1,78 +1,12 @@
-const alphabet = {
-    '1': { word: 'UM', emoji: '🦄', color: '#ffb703' },
-    '2': { word: 'DOIS', emoji: '🍎', color: '#ff7096' },
-    '3': { word: 'TRÊS', emoji: '🎈', color: '#a2d2ff' },
-    '4': { word: 'QUATRO', emoji: '🍀', color: '#06d6a0' },
-    '5': { word: 'CINCO', emoji: '⭐', color: '#70e000' },
-    '6': { word: 'SEIS', emoji: '🎲', color: '#ffe5ec' },
-    '7': { word: 'SETE', emoji: '🍭', color: '#ffd6ff' },
-    '8': { word: 'OITO', emoji: '🐙', color: '#90e0ef' },
-    '9': { word: 'NOVE', emoji: '🍬', color: '#ef476f' },
-    '0': { word: 'ZERO', emoji: '🥚', color: '#fbc490' },
-    'A': { word: 'ABELHA', emoji: '🐝', color: '#ffd166' },
-    'B': { word: 'BORBOLETA', emoji: '🦋', color: '#06d6a0' },
-    'C': { word: 'CACHORRO', emoji: '🐶', color: '#118ab2' },
-    'D': { word: 'DINOSSAURO', emoji: '🦖', color: '#ef476f' },
-    'E': { word: 'ELEFANTE', emoji: '🐘', color: '#8338ec' },
-    'F': { word: 'FLOR', emoji: '🌸', color: '#3a86c8' },
-    'G': { word: 'GATO', emoji: '🐱', color: '#ffb703' },
-    'H': { word: 'HIPOPÓTAMO', emoji: '🦛', color: '#a2d2ff' },
-    'I': { word: 'ILHA', emoji: '🏝️', color: '#ffc8dd' },
-    'J': { word: 'JACARÉ', emoji: '🐊', color: '#00b4d8' },
-    'K': { word: 'KIWI', emoji: '🥝', color: '#70e000' },
-    'L': { word: 'LEÃO', emoji: '🦁', color: '#ffd166' },
-    'M': { word: 'MELISSA', emoji: '👧', color: '#ff7096' },
-    'N': { word: 'NUVEM', emoji: '☁️', color: '#b5e2fa' },
-    'O': { word: 'OVELHA', emoji: '🐑', color: '#fcd5ce' },
-    'P': { word: 'PEIXE', emoji: '🐟', color: '#90e0ef' },
-    'Q': { word: 'QUEIJO', emoji: '🧀', color: '#ffe5ec' },
-    'R': { word: 'ROBÔ', emoji: '🤖', color: '#72efdd' },
-    'S': { word: 'SOL', emoji: '☀️', color: '#fbc490' },
-    'T': { word: 'TARTARUGA', emoji: '🐢', color: '#c8b6ff' },
-    'U': { word: 'ULISSES', emoji: '👦', color: '#ffd6ff' },
-    'V': { word: 'VACA', emoji: '🐮', color: '#e8c547' },
-    'W': { word: 'WI-FI', emoji: '📶', color: '#e07a5f' },
-    'X': { word: 'XÍCARA', emoji: '☕', color: '#81b29a' },
-    'Y': { word: 'YOGA', emoji: '🧘', color: '#f4f1de' },
-    'Z': { word: 'ZEBRA', emoji: '🦓', color: '#cfdbd5' }
-};
-
-const plurals = {
-    'A': 'ABELHAS',
-    'B': 'BORBOLETAS',
-    'C': 'CACHORROS',
-    'D': 'DINOSSAUROS',
-    'E': 'ELEFANTES',
-    'F': 'FLORES',
-    'G': 'GATOS',
-    'H': 'HIPOPÓTAMOS',
-    'I': 'ILHAS',
-    'J': 'JACARÉS',
-    'K': 'KIWIS',
-    'L': 'LEÕES',
-    'M': 'MELISSAS',
-    'N': 'NUVENS',
-    'O': 'OVELHAS',
-    'P': 'PEIXES',
-    'Q': 'QUEIJOS',
-    'R': 'ROBÔS',
-    'S': 'SÓIS',
-    'T': 'TARTARUGAS',
-    'U': 'ULISSES',
-    'V': 'VACAS',
-    'W': 'WI-FIS',
-    'X': 'XÍCARAS',
-    'Y': 'YOGAS',
-    'Z': 'ZEBRAS'
-};
-
+// Os dados (NUMBERS, LETTERS) e as helpers puras vêm de data.js, carregado antes deste arquivo.
 let audioCtx = null;
 let musicInterval = null;
 let musicPlaying = false;
 let toastTimeout = null;
 let currentSpeechAudio = null;
-let currentlySpeakingLetter = null;
+let currentlySpeaking = null;
 let lastLetterSelected = null;
+const lastOptionIndexByLetter = {};
 
 const melodyNotes = [
     60, 64, 67, 72,
@@ -99,21 +33,21 @@ function playMelodyNote() {
     if (!audioCtx || !musicPlaying) return;
     const osc = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
-    
+
     osc.type = 'triangle';
     const midiNote = melodyNotes[noteIndex];
     osc.frequency.value = Math.pow(2, (midiNote - 69) / 12) * 440;
-    
+
     gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
     gainNode.gain.linearRampToValueAtTime(0.03, audioCtx.currentTime + 0.05);
     gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.8);
-    
+
     osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
-    
+
     osc.start();
     osc.stop(audioCtx.currentTime + 0.85);
-    
+
     noteIndex = (noteIndex + 1) % melodyNotes.length;
 }
 
@@ -139,17 +73,17 @@ function playBubbleSound() {
     if (!audioCtx) return;
     const osc = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
-    
+
     osc.type = 'sine';
     osc.frequency.setValueAtTime(180, audioCtx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.12);
-    
+
     gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.15);
-    
+
     osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
-    
+
     osc.start();
     osc.stop(audioCtx.currentTime + 0.18);
 }
@@ -158,186 +92,187 @@ function playWarningSound() {
     if (!audioCtx) return;
     const osc = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
-    
+
     osc.type = 'square';
     osc.frequency.setValueAtTime(150, audioCtx.currentTime);
     osc.frequency.linearRampToValueAtTime(70, audioCtx.currentTime + 0.18);
-    
+
     gainNode.gain.setValueAtTime(0.06, audioCtx.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.22);
-    
+
     osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
-    
+
     osc.start();
     osc.stop(audioCtx.currentTime + 0.25);
 }
 
-function speakLetter(letter, word) {
+function stopCurrentSpeech() {
     if (currentSpeechAudio) {
         currentSpeechAudio.pause();
         currentSpeechAudio = null;
     }
-    currentlySpeakingLetter = letter;
-    const ttsUrl = `audio/${letter.toLowerCase()}.mp3`;
-    currentSpeechAudio = new Audio(ttsUrl);
+}
+
+function playSpeech(fileUrl, token) {
+    stopCurrentSpeech();
+    currentlySpeaking = token;
+    currentSpeechAudio = new Audio(fileUrl);
     currentSpeechAudio.addEventListener('ended', () => {
-        if (currentlySpeakingLetter === letter) {
-            currentlySpeakingLetter = null;
+        if (currentlySpeaking === token) {
+            currentlySpeaking = null;
         }
     });
-    currentSpeechAudio.play().catch(() => {});
+    currentSpeechAudio.play().catch(() => {
+        if (currentlySpeaking === token) {
+            currentlySpeaking = null;
+        }
+    });
 }
 
 function createParticles() {
     const container = document.getElementById('stage-particles');
     container.innerHTML = '';
     const emojis = ['✨', '🎈', '⭐', '🌈', '🍭', '🎉'];
-    
+
     for (let i = 0; i < 20; i++) {
         const particle = document.createElement('div');
         particle.className = 'particle';
         particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-        
+
         const angle = Math.random() * Math.PI * 2;
         const distance = 80 + Math.random() * 150;
         const dx = Math.cos(angle) * distance;
         const dy = Math.sin(angle) * distance;
         const rotate = Math.random() * 360 - 180;
-        
+
         particle.style.setProperty('--dx', `${dx}px`);
         particle.style.setProperty('--dy', `${dy}px`);
         particle.style.setProperty('--dr', `${rotate}deg`);
-        
+
         particle.style.left = '50%';
         particle.style.top = '50%';
-        
+
         container.appendChild(particle);
     }
 }
 
-function selectLetter(letter) {
-    if (currentlySpeakingLetter === letter) {
-        return;
-    }
-    const item = alphabet[letter.toUpperCase()];
-    if (!item) return;
-    
+function resetStageAnimation() {
     const stageLetter = document.getElementById('stage-letter');
     const stageEmoji = document.getElementById('stage-emoji');
     const stageWord = document.getElementById('stage-word');
-    const stageCard = document.getElementById('stage-card');
-    
+
     stageLetter.classList.remove('animate-pop');
     stageEmoji.classList.remove('animate-pop');
     stageWord.classList.remove('animate-pop');
     void stageLetter.offsetWidth;
-    
-    const count = parseInt(letter);
-    const isNumber = !isNaN(count);
-    
-    let isCombination = isNumber && lastLetterSelected !== null;
-    let prevLetter = lastLetterSelected;
-    
-    stageLetter.textContent = letter;
-    
-    if (isCombination) {
-        const itemLetter = alphabet[prevLetter];
-        const pluralWord = plurals[prevLetter];
-        const wordText = count === 1 ? itemLetter.word : pluralWord;
-        stageWord.textContent = count + ' ' + wordText;
-        
-        if (count === 0) {
-            stageEmoji.textContent = '💨';
-            stageEmoji.style.fontSize = '8rem';
-        } else {
-            stageEmoji.textContent = Array(count).fill(itemLetter.emoji).join(' ');
-            if (count === 1) {
-                stageEmoji.style.fontSize = '10rem';
-            } else if (count <= 4) {
-                stageEmoji.style.fontSize = '6rem';
-            } else {
-                stageEmoji.style.fontSize = '4.5rem';
-            }
-        }
-        
-        document.body.style.backgroundColor = itemLetter.color;
-        stageCard.style.setProperty('--theme-color', itemLetter.color);
-    } else {
-        stageWord.textContent = item.word;
-        if (isNumber) {
-            if (count === 0) {
-                stageEmoji.textContent = '💨';
-                stageEmoji.style.fontSize = '8rem';
-            } else {
-                stageEmoji.textContent = Array(count).fill(item.emoji).join(' ');
-                if (count === 1) {
-                    stageEmoji.style.fontSize = '10rem';
-                } else if (count <= 4) {
-                    stageEmoji.style.fontSize = '6rem';
-                } else {
-                    stageEmoji.style.fontSize = '4.5rem';
-                }
-            }
-        } else {
-            stageEmoji.textContent = item.emoji;
-            stageEmoji.style.fontSize = '10rem';
-        }
-        document.body.style.backgroundColor = item.color;
-        stageCard.style.setProperty('--theme-color', item.color);
-    }
-    
-    stageLetter.classList.add('animate-pop');
-    stageEmoji.classList.add('animate-pop');
-    stageWord.classList.add('animate-pop');
-    
+
+    return { stageLetter, stageEmoji, stageWord };
+}
+
+function setStageEmoji(stageEmoji, text, fontSize) {
+    stageEmoji.textContent = text;
+    stageEmoji.style.fontSize = fontSize;
+}
+
+function emojiSizeForCount(count) {
+    if (count === 1) return '10rem';
+    if (count <= 4) return '6rem';
+    return '4.5rem';
+}
+
+function animateStageCard(color) {
+    document.body.style.backgroundColor = color;
+    document.getElementById('stage-card').style.setProperty('--theme-color', color);
+    document.getElementById('stage-letter').classList.add('animate-pop');
+    document.getElementById('stage-emoji').classList.add('animate-pop');
+    document.getElementById('stage-word').classList.add('animate-pop');
+}
+
+function highlightKey(key) {
     document.querySelectorAll('.key-card').forEach(card => {
-        if (card.dataset.key === letter) {
+        if (card.dataset.key === key) {
             card.classList.add('active');
             setTimeout(() => card.classList.remove('active'), 250);
         }
     });
-    
+}
+
+function selectLetter(key) {
+    const upper = key.toUpperCase();
+    if (NUMBERS[upper]) {
+        selectNumber(upper);
+    } else if (LETTERS[upper]) {
+        selectLetterOption(upper);
+    }
+}
+
+// SPEECH-01/03: cada toque sorteia uma opção da letra, diferente da última exibida.
+function selectLetterOption(letter) {
+    const optionIndex = pickOptionIndex(letter, lastOptionIndexByLetter[letter]);
+    lastOptionIndexByLetter[letter] = optionIndex;
+    lastLetterSelected = { letter, optionIndex };
+
+    const option = getLetterOption(letter, optionIndex);
+    const { stageLetter, stageEmoji, stageWord } = resetStageAnimation();
+
+    stageLetter.textContent = letter;
+    setStageEmoji(stageEmoji, option.emoji, '10rem');
+    stageWord.textContent = option.word;
+
+    animateStageCard(LETTERS[letter].color);
+    highlightKey(letter);
     playBubbleSound();
-    
-    if (isCombination) {
-        speakLetter(count + '_' + prevLetter.toLowerCase(), stageWord.textContent);
-    } else {
-        speakLetter(letter, item.word);
-    }
-    
+    playSpeech(getLetterAudioFile(letter, optionIndex), letter);
     createParticles();
-    
-    if (!isNumber) {
-        lastLetterSelected = letter.toUpperCase();
-    } else {
-        lastLetterSelected = null;
+}
+
+// SPEECH-09/10: a combinação número+letra usa a opção exibida da letra.
+function selectNumber(num) {
+    const count = parseInt(num, 10);
+    const combo = lastLetterSelected;
+    lastLetterSelected = null;
+
+    const { stageLetter, stageEmoji, stageWord } = resetStageAnimation();
+    stageLetter.textContent = num;
+
+    if (combo) {
+        const option = getLetterOption(combo.letter, combo.optionIndex);
+        stageWord.textContent = getComboDisplayText(count, combo.letter, combo.optionIndex);
+        if (count === 0) {
+            setStageEmoji(stageEmoji, '💨', '8rem');
+        } else {
+            setStageEmoji(stageEmoji, Array(count).fill(option.emoji).join(' '), emojiSizeForCount(count));
+        }
+        animateStageCard(LETTERS[combo.letter].color);
+        highlightKey(num);
+        playBubbleSound();
+        playSpeech(getComboAudioFile(count, combo.letter, combo.optionIndex), `${num}_${combo.letter}`);
+        createParticles();
+        return;
     }
+
+    const item = NUMBERS[num];
+    stageWord.textContent = item.word;
+    if (count === 0) {
+        setStageEmoji(stageEmoji, '💨', '8rem');
+    } else {
+        setStageEmoji(stageEmoji, Array(count).fill(item.emoji).join(' '), emojiSizeForCount(count));
+    }
+    animateStageCard(item.color);
+    highlightKey(num);
+    playBubbleSound();
+    playSpeech(getNumberAudioFile(num), num);
+    createParticles();
 }
 
 function showWarning() {
     lastLetterSelected = null;
-    if (currentlySpeakingLetter === 'WARNING') {
+    if (currentlySpeaking === 'WARNING') {
         return;
     }
-    currentlySpeakingLetter = 'WARNING';
-    if (currentSpeechAudio) {
-        currentSpeechAudio.pause();
-        currentSpeechAudio = null;
-    }
     playWarningSound();
-    const ttsUrl = 'audio/warning.mp3';
-    currentSpeechAudio = new Audio(ttsUrl);
-    currentSpeechAudio.addEventListener('ended', () => {
-        if (currentlySpeakingLetter === 'WARNING') {
-            currentlySpeakingLetter = null;
-        }
-    });
-    currentSpeechAudio.play().catch(() => {
-        if (currentlySpeakingLetter === 'WARNING') {
-            currentlySpeakingLetter = null;
-        }
-    });
+    playSpeech('audio/warning.mp3', 'WARNING');
     const toast = document.getElementById('invalid-key-toast');
     toast.classList.remove('hidden');
     const toastClone = toast.cloneNode(true);
@@ -348,33 +283,40 @@ function showWarning() {
     }, 1500);
 }
 
+function getKeyDisplay(key) {
+    if (NUMBERS[key]) {
+        return { emoji: NUMBERS[key].emoji, color: NUMBERS[key].color };
+    }
+    return { emoji: LETTERS[key].options[0].emoji, color: LETTERS[key].color };
+}
+
 function buildKeyboard() {
     const grid = document.getElementById('virtual-keyboard');
     grid.innerHTML = '';
-    
-    Object.keys(alphabet).forEach(key => {
-        const item = alphabet[key];
+
+    Object.keys(NUMBERS).concat(Object.keys(LETTERS)).forEach(key => {
+        const display = getKeyDisplay(key);
         const card = document.createElement('div');
         card.className = 'key-card';
         card.dataset.key = key;
-        card.style.setProperty('--key-theme-color', item.color);
-        
+        card.style.setProperty('--key-theme-color', display.color);
+
         const letterSpan = document.createElement('span');
         letterSpan.className = 'key-letter';
         letterSpan.textContent = key;
-        
+
         const emojiSpan = document.createElement('span');
         emojiSpan.className = 'key-emoji';
-        emojiSpan.textContent = item.emoji;
-        
+        emojiSpan.textContent = display.emoji;
+
         card.appendChild(letterSpan);
         card.appendChild(emojiSpan);
-        
+
         card.addEventListener('click', () => {
             initAudio();
             selectLetter(key);
         });
-        
+
         grid.appendChild(card);
     });
 }
@@ -425,23 +367,23 @@ window.addEventListener('keydown', (e) => {
         e.preventDefault();
         return;
     }
-    
+
     if (document.getElementById('welcome-modal').classList.contains('hidden') === false) {
         return;
     }
-    
+
     if (e.key === 'Tab' || e.key === 'Enter' || e.key === 'Space' || e.key === ' ' || e.key === 'Backspace' || e.key === 'Escape') {
         e.preventDefault();
         showWarning();
         return;
     }
-    
+
     if (e.ctrlKey || e.metaKey || e.altKey) {
         return;
     }
-    
+
     const key = e.key.toUpperCase();
-    if (alphabet[key]) {
+    if (NUMBERS[key] || LETTERS[key]) {
         e.preventDefault();
         selectLetter(key);
     } else {

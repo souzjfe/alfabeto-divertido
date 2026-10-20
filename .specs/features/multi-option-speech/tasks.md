@@ -101,14 +101,14 @@ Geração dos mp3s de todas as opções.
 
 **Done when**:
 
-- [ ] Teclado renderiza 10 números + 26 letras com emoji da opção 0
-- [ ] Toque na letra mostra opção sorteada e toca o mp3 correspondente (`audio/m.mp3`, `audio/m_1.mp3`…)
-- [ ] Toque repetido na mesma letra nunca repete a opção imediatamente anterior
-- [ ] Letra + número exibe "N PALAVRA(S)" da opção exibida e toca `audio/{n}_{letra}_{idx}.mp3`
-- [ ] Números sozinhos e warning continuam idênticos ao comportamento atual
-- [ ] Falha de áudio não quebra a interface (`.catch` mantido)
-- [ ] Gate check passes: `node --test tests/app.test.mjs`
-- [ ] Test count: ≥ 8 testes passam
+- [x] Teclado renderiza 10 números + 26 letras com emoji da opção 0
+- [x] Toque na letra mostra opção sorteada e toca o mp3 correspondente (`audio/m.mp3`, `audio/m_1.mp3`…)
+- [x] Toque repetido na mesma letra nunca repete a opção imediatamente anterior
+- [x] Letra + número exibe "N PALAVRA(S)" da opção exibida e toca `audio/{n}_{letra}_{idx}.mp3`
+- [x] Números sozinhos e warning continuam idênticos ao comportamento atual
+- [x] Falha de áudio não quebra a interface (`.catch` mantido)
+- [x] Gate check passes: `node --test tests/app.test.mjs` (10/10)
+- [x] Test count: 10 testes passam (sem remoção silenciosa)
 
 **Tests**: unit
 **Gate**: quick
