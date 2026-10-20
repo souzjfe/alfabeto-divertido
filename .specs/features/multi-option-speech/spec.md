@@ -2,12 +2,12 @@
 
 ## Problem Statement
 
-Hoje cada letra do Alfabeto Divertido tem exatamente uma palavra fixa com um mp3 gravado ("M de Melissa", "O de ovelha"). A criança quer variedade: cada toque na letra deve poder sortear palavras diferentes — incluindo nomes de pessoas conhecidas (Pedro, Antonela, Aurora, Julio, Joca, Bia, Jeferson, Patrícia). Sem isso, o app fica repetitivo rápido e não ensina novas palavras.
+Hoje cada letra do Alfabeto Divertido tem exatamente uma palavra fixa com um mp3 gravado ("M de Melissa", "O de ovelha"). A criança quer variedade: cada toque na letra deve poder sortear palavras diferentes — incluindo nomes de pessoas conhecidas (Pedro, Antonela, Aurora, Julio, Joca, Bia, Jeferson, Patrícia, Isis, Benício). Sem isso, o app fica repetitivo rápido e não ensina novas palavras.
 
 ## Goals
 
 - [ ] Cada letra de A a Z tem ao menos 5 opções de palavra/nome, com áudio próprio.
-- [ ] Cada toque numa letra sorteia uma opção nova (diferente da anterior) e toca o áudio dela.
+- [ ] Cada toque numa letra sorteia uma opção ainda não falada naquele ciclo e toca o áudio dela; quando todas forem faladas, o ciclo reinicia sem repetir a imediatamente anterior.
 - [ ] As combinações número+letra (ex.: "3 P") usam a opção sorteada ("3 PEDROS") com áudio próprio.
 - [ ] Suíte de testes automatizados cobre dados, lógica de sorteio, manifesto de áudio e presença dos mp3s.
 
@@ -28,14 +28,15 @@ Hoje cada letra do Alfabeto Divertido tem exatamente uma palavra fixa com um mp3
 
 | Assumption / decisão | Chosen default | Rationale | Confirmed? |
 | --------------------- | --------------- | --------- | ---------- |
-| Como a opção é escolhida a cada toque | Sorteio uniforme entre as opções da letra, excluindo a última opção exibida daquela letra (quando há mais de uma) | Evita repetição imediata sem frustrar a criança com o mesmo resultado duas vezes seguidas | n (padrão do agente; alternativa "ciclo fixo" e "seletor visual" foram recusadas) |
+| Como a opção é escolhida a cada toque | Lista de exclusão por letra: cada toque sorteia entre as opções ainda não faladas naquele ciclo; quando todas forem faladas, o ciclo reinicia (o primeiro sorteio do novo ciclo exclui a última opção exibida) | Pedido do usuário: "sorteou Jacaré, o próximo sorteio só pode ser os outros, exceto Jacaré… até todas as possibilidades serem faladas" | s (pedido do usuário) |
 | Primeira opção de cada letra | É a palavra atual da letra (ex.: M → MELISSA), preservando os mp3s existentes | Mantém o comportamento conhecido e evita regenerar 297 arquivos | n (padrão do agente) |
 | Nomeação dos arquivos de áudio novos | Opção 0 herda os nomes atuais (`m.mp3`, `5_m.mp3`); opções n>0 usam sufixo (`m_1.mp3`, `5_m_1.mp3`) | Compatibilidade total com os arquivos já versionados | n (padrão do agente) |
-| Acentuação dos nomes exibidos | Grafia correta: JÚLIO e PATRÍCIA (as demais não têm acento) | App infantil de alfabeto deve ensinar ortografia correta | n (padrão do agente) |
-| Plural dos nomes | Nome + S (PEDROS, ANTONELAS, BIAS, JOCAS, JEFERSONS…), exceto ULISSES que permanece invariante | Regra simples e previsível para a faixa etária | n (padrão do agente) |
+| Acentuação dos nomes exibidos | Grafia correta: JÚLIO, PATRÍCIA e BENÍCIO (as demais não têm acento) | App infantil de alfabeto deve ensinar ortografia correta | n (padrão do agente; BENÍCIO por analogia a JÚLIO/FÁBIO) |
+| Plural dos nomes | Nome + S (PEDROS, ANTONELAS, BIAS, JOCAS, JEFERSONS, BENÍCIOS…), exceto nomes terminados em -s (ULISSES, ISIS) que permanecem invariantes | Regra simples e previsível para a faixa etária | n (padrão do agente) |
 | Gênero gramatical para os áudios de contagem | Cada opção carrega campo `gender` (M/F) usado em "Um/Uma", "Duas" | Necessário para o edge-tts falar "Um Pedro" vs "Uma Antonela" | n (padrão do agente) |
 | O que o teclado mostra | A tecla mantém o emoji da primeira opção da letra (ex.: M sempre 👧) | Evita mudança visual no teclado; o palco já mostra o emoji da opção sorteada | n (padrão do agente) |
 | Nomes extras além dos obrigatórios | WESLEY (W), YASMIN e YARA (Y) entram como opções extras para completar 5 | Requisito é "pelo menos 5 de cada" + os 8 nomes obrigatórios; extras são permitidos | n (padrão do agente) |
+| Ícones dos nomes | JOCA 👦 (menino, é apelido), BENÍCIO 👦, AURORA 👧 e ISIS 👧 | Pedido do usuário: "Joca é um apelido, então é um menino o ícone"; "Aurora é um nome de menina, Isis também é uma menina" | s (pedido do usuário) |
 | Regeneração dos mp3s da opção 0 | Nunca regenerados; geração cobre apenas arquivos ausentes (`--force` regenera tudo) | Preserva bytes já versionados e deixa a execução idempotente | n (padrão do agente) |
 
 **Open questions:** none - all resolved or logged above (required before the spec is confirmed).
@@ -54,14 +55,14 @@ Hoje cada letra do Alfabeto Divertido tem exatamente uma palavra fixa com um mp3
 
 1. WHEN uma tecla de letra é acionada THEN o sistema SHALL exibir no palco uma opção sorteada entre as opções cadastradas daquela letra.  <!-- event-driven -->
 2. WHEN uma opção é exibida THEN o sistema SHALL reproduzir o arquivo de áudio correspondente àquela opção (ex.: letra M → `audio/m_1.mp3`).  <!-- event-driven -->
-3. WHEN uma tecla de letra é acionada novamente THEN o sistema SHALL sortear uma opção diferente da última opção exibida daquela letra.  <!-- event-driven -->
+3. WHEN uma tecla de letra é acionada novamente THEN o sistema SHALL sortear uma opção que ainda não tenha sido falada naquele ciclo, reiniciando o ciclo (sem repetir a opção imediatamente anterior) quando todas já tiverem sido faladas.  <!-- event-driven -->
 4. The system SHALL cadastrar ao menos 5 opções para cada letra de A a Z, cada uma com palavra, plural, emoji e gênero.  <!-- ubiquitous -->
-5. The system SHALL incluir os nomes Pedro, Antonela, Aurora, Bia, Julio, Joca, Jeferson e Patrícia entre as opções das letras P, A, B e J respectivamente.  <!-- ubiquitous -->
+5. The system SHALL incluir os nomes Pedro, Antonela, Aurora, Bia, Julio, Joca, Jeferson, Patrícia, Isis e Benício entre as opções das letras P, A, B, J e I respectivamente, com ícone de menina (👧) para Aurora e Isis e de menino (👦) para Joca e Benício.  <!-- ubiquitous -->
 6. The system SHALL usar os arquivos de áudio já existentes para a primeira opção de cada letra, sem regenerá-los.  <!-- ubiquitous -->
 7. IF a reprodução de um áudio falhar THEN o sistema SHALL manter a interface responsiva sem exibir erro ao usuário.  <!-- unwanted-behavior -->
 8. WHEN uma tecla de número é acionada sem uma letra anterior THEN o sistema SHALL exibir e falar o número como hoje, sem sortear opções.  <!-- event-driven -->
 
-**Independent Test**: Abrir o app, tocar em P três vezes seguidas e ver/ouvir opções diferentes (ex.: PEIXE, PEDRO, PATRÍCIA) sem repetir a mesma duas vezes seguidas.
+**Independent Test**: Abrir o app e tocar em P cinco vezes seguidas: as cinco opções (PEIXE, PEDRO, PATRÍCIA, PANDA, PIPA) aparecem exatamente uma vez cada; o sexto toque não repete a opção do quinto.
 
 ---
 
@@ -101,7 +102,7 @@ Hoje cada letra do Alfabeto Divertido tem exatamente uma palavra fixa com um mp3
 ## Edge Cases
 
 - IF o app estiver aberto durante a regeneração e um mp3 novo ainda não existir THEN o sistema SHALL falhar silenciosamente naquele toque (AC P1-7), sem quebrar as demais teclas.
-- WHEN a letra tem somente uma opção THEN o sistema SHALL sempre exibir essa única opção (regra de exclusão do sorteio não se aplica).
+- WHEN a letra tem somente uma opção THEN o sistema SHALL sempre exibir essa única opção (o ciclo de exclusão do sorteio não se aplica).
 - IF a criança toca várias vezes rápido na mesma tecla THEN o sistema SHALL parar o áudio anterior e tocar o novo sorteio (comportamento "a cada toque").
 - WHEN a geração roda com todos os arquivos já presentes THEN o script SHALL concluir sem reescrever nada (idempotente, AC P3-3).
 
@@ -113,18 +114,18 @@ Hoje cada letra do Alfabeto Divertido tem exatamente uma palavra fixa com um mp3
 | -------------- | ----- | ----- | ------ |
 | SPEECH-01 | P1: Sorteio de opções por letra | - | ✅ Verified |
 | SPEECH-02 | P1: Sorteio de opções por letra | - | ✅ Verified |
-| SPEECH-03 | P1: Sorteio de opções por letra | - | ✅ Verified |
+| SPEECH-03 | P1: Sorteio de opções por letra | - | 🔄 Implementing |
 | SPEECH-04 | P1: Sorteio de opções por letra | - | ✅ Verified |
-| SPEECH-05 | P1: Sorteio de opções por letra | - | ✅ Verified |
+| SPEECH-05 | P1: Sorteio de opções por letra | - | 🔄 Implementing |
 | SPEECH-06 | P1: Sorteio de opções por letra | - | ✅ Verified |
 | SPEECH-07 | P1: Sorteio de opções por letra | - | ✅ Verified |
 | SPEECH-08 | P1: Sorteio de opções por letra | - | ✅ Verified |
 | SPEECH-09 | P2: Combinações número + letra | - | ✅ Verified |
 | SPEECH-10 | P2: Combinações número + letra | - | ✅ Verified |
 | SPEECH-11 | P2: Combinações número + letra | - | ✅ Verified |
-| SPEECH-12 | P3: Geração dos mp3s | - | ✅ Verified |
+| SPEECH-12 | P3: Geração dos mp3s | - | 🔄 Implementing |
 | SPEECH-13 | P3: Geração dos mp3s | - | ✅ Verified |
-| SPEECH-14 | P3: Geração dos mp3s | - | ✅ Verified |
+| SPEECH-14 | P3: Geração dos mp3s | - | 🔄 Implementing |
 | SPEECH-15 | P3: Geração dos mp3s | - | ✅ Verified |
 
 **Coverage:** 15 total, 15 mapped to tasks (tasks.md), 0 unmapped.
@@ -133,7 +134,7 @@ Hoje cada letra do Alfabeto Divertido tem exatamente uma palavra fixa com um mp3
 
 ## Success Criteria
 
-- [ ] Suíte verde: `node --test tests/` (dados, sorteio, nomes de arquivo, texto de combinação, manifesto, presença de mp3s) e `python3 -m unittest` (gerador).
-- [ ] Os 8 nomes obrigatórios aparecem como opções e todas as 26 letras têm ≥ 5 opções.
-- [ ] Todos os 1.441 arquivos do manifesto existem em `audio/` (298 atuais + ~1.143 novos).
+- [ ] Suíte verde: `node --test tests/*.test.mjs` (dados, sorteio, nomes de arquivo, texto de combinação, manifesto, presença de mp3s) e `python3 -m unittest discover -s tests -p 'test_*.py'` (gerador).
+- [ ] Os 10 nomes obrigatórios aparecem como opções e todas as 26 letras têm ≥ 5 opções (B e I com 6).
+- [ ] Todos os 1.463 arquivos do manifesto existem em `audio/` (297 legados + 1.166 novos).
 - [ ] Demo manual: tocar em P sorteia PEIXE/PEDRO/PATRÍCIA/PANDA/PIPA com áudio, e "P" + "3" mostra "3 PEDROS" (ou a opção sorteada) com áudio correspondente.

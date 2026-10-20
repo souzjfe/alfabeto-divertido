@@ -9,7 +9,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 ---
 
 **Design**: inline (feature straightforward — no design.md)
-**Status**: Complete ✅
+**Status**: In Progress (emenda: novos nomes, ícones e ciclo de exclusão)
 
 ---
 
@@ -19,8 +19,8 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 
 | Code Layer | Required Test Type | Coverage Expectation | Location Pattern | Run Command |
 | ---------- | ------------------ | -------------------- | ---------------- | ----------- |
-| Dados e lógica pura (`data.js`) | unit | 1:1 com SPEECH-01..06, 09..11, 14: ≥5 opções/letra, nomes obrigatórios, regressão da opção 0, sorteio sem repetição, nome de arquivo, texto de plural | `tests/data.test.mjs` | `node --test tests/data.test.mjs` |
-| UI glue (`app.js`) | unit (headless DOM stub) | 1:1 com SPEECH-01,02,07,08,09: toque sorteia opção no palco, toque repetido muda a opção, combinação usa opção exibida, áudio tocado = arquivo da opção, números sozinhos inalterados | `tests/app.test.mjs` | `node --test tests/app.test.mjs` |
+| Dados e lógica pura (`data.js`) | unit | 1:1 com SPEECH-01..06, 09..11, 14: ≥5 opções/letra, nomes obrigatórios + ícones, regressão da opção 0, sorteio em ciclo (todas as opções faladas antes de repetir), nome de arquivo, texto de plural | `tests/data.test.mjs` | `node --test tests/data.test.mjs` |
+| UI glue (`app.js`) | unit (headless DOM stub) | 1:1 com SPEECH-01,02,03,07,08,09: toque sorteia opção no palco, ciclo de exclusão por letra na UI, combinação usa opção exibida, áudio tocado = arquivo da opção, números sozinhos inalterados | `tests/app.test.mjs` | `node --test tests/app.test.mjs` |
 | Gerador de áudio (`generate_audio.py`) | unit (`unittest`, stdlib) | 1:1 com SPEECH-12..15: parse de data.js, manifesto determinístico, idempotência (só ausentes), falha parcial reportada com exit != 0, voz/ritmo fixos | `tests/test_generator.py` | `python3 -m unittest discover -s tests -p 'test_*.py'` |
 | Áudios gerados (`audio/`) | unit (fs check) | Manifesto completo presente no disco (SPEECH-12, SPEECH-14) | `tests/audio.test.mjs` | `node --test tests/audio.test.mjs` |
 
@@ -51,6 +51,12 @@ Fonte única de dados + UI de sorteio.
 Geração dos mp3s de todas as opções.
 
 - T3 (gerador + testes python) → T4 (execução da geração + teste de cobertura)
+
+### Phase 3: Emenda — novos nomes, ícones e ciclo de exclusão
+
+Pedido do usuário após a entrega: ISIS (I) e BENÍCIO (B) como novas opções; JOCA 👦 e AURORA 👧; e o sorteio passa a usar lista de exclusão por letra (bag sem reposição) até todas as opções serem faladas.
+
+- T5 (dados + áudios + testes) → T6 (ciclo de exclusão + app + testes)
 
 ---
 
@@ -173,6 +179,64 @@ Geração dos mp3s de todas as opções.
 
 ---
 
+### T5: Adicionar ISIS e BENÍCIO com ícones corretos e gerar os áudios
+
+**What**: `data.js` ganha BENÍCIO (B, índice 5, 👦, M, plural BENÍCIOS) e ISIS (I, índice 5, 👧, F, plural invariante ISIS); AURORA muda 🌅→👧 e JOCA 🤡→👦; executar `python3 generate_audio.py` para gerar os 22 mp3s novos (`b_5`, `i_5` + combinações 0-9); atualizar `MANDATORY_NAMES`, adicionar teste de ícones e ajustar o manifesto python para 1.463.
+**Where**: `data.js`, `audio/`, `tests/data.test.mjs`, `tests/test_generator.py`
+**Depends on**: T4
+**Reuses**: gerador e convenções da feature base (opção 0 intocada; índices existentes não mudam — as opções novas são anexadas no fim)
+**Requirement**: SPEECH-04, SPEECH-05, SPEECH-12, SPEECH-14
+
+**Tools**:
+
+- MCP: NONE
+- Skill: NONE
+
+**Done when**:
+
+- [ ] B e I têm 6 opções; demais letras inalteradas; opção 0 de todas intacta
+- [ ] AURORA 👧, JOCA 👦, ISIS 👧 e BENÍCIO 👦 (AC P1-5)
+- [ ] `python3 generate_audio.py` exit 0 com exatamente 22 arquivos criados
+- [ ] Manifesto python = 1.463; testes cobrem "B de Benício.", "I de Isis.", "Uma Isis.", "Dois Benícios."
+- [ ] Gate check passes (full): `node --test tests/*.test.mjs && python3 -m unittest discover -s tests -p 'test_*.py'`
+- [ ] Test count: suíte completa verde (26 Node + 9 Python = 35 testes)
+
+**Tests**: unit
+**Gate**: full
+
+**Commit**: `feat: add Isis and Benício options with gender icons`
+
+---
+
+### T6: Trocar o sorteio para ciclo de exclusão por letra
+
+**What**: `pickOptionIndex` vira sorteio em ciclo com estado `{ spoken, last }`: sortea apenas entre as opções ainda não faladas naquele ciclo; quando todas forem faladas, o ciclo reinicia e o primeiro sorteio do novo ciclo exclui a opção imediatamente anterior. `app.js` guarda o estado por letra (`drawStateByLetter`) e o repassa a cada toque (combos não interferem no ciclo); testes de dados reescritos para a nova regra e teste de UI cobre a virada de ciclo.
+**Where**: `data.js`, `app.js`, `tests/data.test.mjs`, `tests/app.test.mjs`
+**Depends on**: T5
+**Reuses**: helpers puras com rng injetado e stubs de DOM dos testes existentes
+**Requirement**: SPEECH-03
+
+**Tools**:
+
+- MCP: NONE
+- Skill: NONE
+
+**Done when**:
+
+- [ ] Cada ciclo de N toques cobre as N opções exatamente uma vez (rng sweep em todas as letras)
+- [ ] Nenhum sorteio repete a opção imediatamente anterior, inclusive na virada de ciclo
+- [ ] Letra com 1 opção sempre retorna índice 0
+- [ ] `app.js` usa estado de ciclo por letra; combinações número+letra não consomem o ciclo
+- [ ] Gate check passes: `node --test tests/*.test.mjs && python3 -m unittest discover -s tests -p 'test_*.py'`
+- [ ] Test count: suíte completa verde (27 Node + 9 Python = 36 testes)
+
+**Tests**: unit
+**Gate**: quick
+
+**Commit**: `feat: draw each letter option once before any repeat`
+
+---
+
 ## Phase Execution Map
 
 Visual representation of task ordering. Phases run in sequence, and tasks within a phase run in order:
@@ -180,6 +244,7 @@ Visual representation of task ordering. Phases run in sequence, and tasks within
 ```
 T1 → T2
 T1 → T3 → T4
+T4 → T5 → T6
 ```
 
 Execution is strictly sequential - there is no intra-phase parallelism. A single agent (or batch worker) works one task at a time, in order.
@@ -194,6 +259,8 @@ Execution is strictly sequential - there is no intra-phase parallelism. A single
 | T2: Sorteio no app.js | 1 arquivo (modify) + testes | ✅ Granular |
 | T3: Reescrever generate_audio.py | 1 arquivo (rewrite) + testes | ✅ Granular |
 | T4: Gerar mp3s | 1 diretório de artefatos + 1 teste | ✅ Granular |
+| T5: Novos nomes/ícones + áudios | 1 arquivo (modify) + artefatos + testes | ✅ Granular |
+| T6: Ciclo de exclusão | 2 arquivos (modify) + testes | ✅ Granular |
 
 ## Diagram-Definition Cross-Check
 
@@ -203,6 +270,8 @@ Execution is strictly sequential - there is no intra-phase parallelism. A single
 | T2 | T1 | T1 → T2 | ✅ Match |
 | T3 | T1 | T1 → T3 | ✅ Match |
 | T4 | T3 | T3 → T4 | ✅ Match |
+| T5 | T4 | T4 → T5 | ✅ Match |
+| T6 | T5 | T5 → T6 | ✅ Match |
 
 ## Test Co-location Validation
 
@@ -212,3 +281,5 @@ Execution is strictly sequential - there is no intra-phase parallelism. A single
 | T2: app.js | UI glue (headless DOM stub) | unit | unit | ✅ OK |
 | T3: generate_audio.py | Gerador de áudio | unit | unit | ✅ OK |
 | T4: audio/ + teste de cobertura | Áudios gerados (fs check) | unit | unit | ✅ OK |
+| T5: data.js + audio/ + testes | Dados + Áudios gerados | unit | unit | ✅ OK |
+| T6: data.js + app.js + testes | Dados + UI glue | unit | unit | ✅ OK |
