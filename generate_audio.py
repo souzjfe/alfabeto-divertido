@@ -18,7 +18,8 @@ try:
     import edge_tts
 except ImportError:
     import subprocess
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "edge-tts"])
+    # >=7.3.1: versões antigas recebem 403 do serviço de síntese da Microsoft.
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "edge-tts>=7.3.1"])
     import edge_tts
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -116,6 +117,8 @@ async def generate_entries(entries, audio_dir=AUDIO_DIR, force=False, save_fn=No
                 await save_fn(entry['text'], path)
             result['created'] += 1
         except Exception as exc:
+            if os.path.exists(path) and os.path.getsize(path) == 0:
+                os.remove(path)
             result['failed'].append({'filename': entry['filename'], 'error': str(exc)})
 
     await asyncio.gather(*(run_one(entry) for entry in entries))

@@ -72,6 +72,7 @@ class GenerationTests(unittest.TestCase):
     def _fake_save(self, fail_on=None):
         async def save(text, path):
             if fail_on and os.path.basename(path) == fail_on:
+                open(path, 'w').close()  # simula o arquivo parcial que o edge-tts deixa para trás
                 raise RuntimeError('síntese indisponível')
             self.saved.append(os.path.basename(path))
             with open(path, 'w') as fh:
@@ -105,6 +106,9 @@ class GenerationTests(unittest.TestCase):
         self.assertIn('síntese indisponível', result['failed'][0]['error'])
         self.assertEqual(result['created'], len(entries) - 1)
         self.assertEqual(generate_audio.exit_code(result), 1)
+        self.assertFalse(
+            os.path.exists(os.path.join(self.tmp, '3_m_2.mp3')),
+            'arquivo parcial vazio deve ser removido')
 
 
 class VoiceTests(unittest.TestCase):
