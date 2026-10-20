@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "promote_threshold": 2,
+  "window_days": 45,
+  "quarantine_threshold": 2,
+  "next_id": 3,
+  "lessons": [
+    {
+      "id": "L-001",
+      "key": "spec_precision_gap::define in the ac the exact expected output for degenerate quantities zero and one including any preserved legacy rendering such as the zero count emoji",
+      "text": "Define in the AC the exact expected output for degenerate quantities (zero and one), including any preserved legacy rendering such as the zero-count emoji.",
+      "signal": "spec_precision_gap",
+      "scope": "spec",
+      "status": "candidate",
+      "features": [
+        "multi-option-speech"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "spec.md:76 (spec)"
+      ],
+      "created": "2026-10-20T18:34:41Z",
+      "last_seen": "2026-10-20T18:34:41Z"
+    },
+    {
+      "id": "L-002",
+      "key": "ac_gap::assert side effect edge cases explicitly e g previous audio paused on rapid re taps implementing the behavior in code does not count as coverage",
+      "text": "Assert side-effect edge cases explicitly (e.g. previous audio paused on rapid re-taps); implementing the behavior in code does not count as coverage.",
+      "signal": "ac_gap",
+      "scope": "tests",
+      "status": "candidate",
+      "features": [
+        "multi-option-speech"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "spec.md:105 (tests)"
+      ],
+      "created": "2026-10-20T18:34:41Z",
+      "last_seen": "2026-10-20T18:34:41Z"
+    }
+  ]
+}

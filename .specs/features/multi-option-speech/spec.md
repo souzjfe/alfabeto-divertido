@@ -111,21 +111,21 @@ Hoje cada letra do Alfabeto Divertido tem exatamente uma palavra fixa com um mp3
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| SPEECH-01 | P1: Sorteio de opções por letra | - | Implementing |
-| SPEECH-02 | P1: Sorteio de opções por letra | - | Implementing |
-| SPEECH-03 | P1: Sorteio de opções por letra | - | Implementing |
-| SPEECH-04 | P1: Sorteio de opções por letra | - | Implementing |
-| SPEECH-05 | P1: Sorteio de opções por letra | - | Implementing |
-| SPEECH-06 | P1: Sorteio de opções por letra | - | Implementing |
-| SPEECH-07 | P1: Sorteio de opções por letra | - | Implementing |
-| SPEECH-08 | P1: Sorteio de opções por letra | - | Implementing |
-| SPEECH-09 | P2: Combinações número + letra | - | Implementing |
-| SPEECH-10 | P2: Combinações número + letra | - | Implementing |
-| SPEECH-11 | P2: Combinações número + letra | - | Implementing |
-| SPEECH-12 | P3: Geração dos mp3s | - | Implementing |
-| SPEECH-13 | P3: Geração dos mp3s | - | Implementing |
-| SPEECH-14 | P3: Geração dos mp3s | - | Implementing |
-| SPEECH-15 | P3: Geração dos mp3s | - | Implementing |
+| SPEECH-01 | P1: Sorteio de opções por letra | - | ✅ Verified |
+| SPEECH-02 | P1: Sorteio de opções por letra | - | ✅ Verified |
+| SPEECH-03 | P1: Sorteio de opções por letra | - | ✅ Verified |
+| SPEECH-04 | P1: Sorteio de opções por letra | - | ✅ Verified |
+| SPEECH-05 | P1: Sorteio de opções por letra | - | ✅ Verified |
+| SPEECH-06 | P1: Sorteio de opções por letra | - | ✅ Verified |
+| SPEECH-07 | P1: Sorteio de opções por letra | - | ✅ Verified |
+| SPEECH-08 | P1: Sorteio de opções por letra | - | ✅ Verified |
+| SPEECH-09 | P2: Combinações número + letra | - | ✅ Verified |
+| SPEECH-10 | P2: Combinações número + letra | - | ✅ Verified |
+| SPEECH-11 | P2: Combinações número + letra | - | ✅ Verified |
+| SPEECH-12 | P3: Geração dos mp3s | - | ✅ Verified |
+| SPEECH-13 | P3: Geração dos mp3s | - | ✅ Verified |
+| SPEECH-14 | P3: Geração dos mp3s | - | ✅ Verified |
+| SPEECH-15 | P3: Geração dos mp3s | - | ✅ Verified |
 
 **Coverage:** 15 total, 15 mapped to tasks (tasks.md), 0 unmapped.
 
