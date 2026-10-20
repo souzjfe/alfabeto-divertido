@@ -72,12 +72,24 @@ def combo_text(count, option):
     return "%s %s." % (NUM_WORDS[count], plural)
 
 
+def _js_object_items(obj):
+    """Percorre chaves como o browser: chaves inteiras em ordem numérica, depois as demais.
+
+    No JS, `Object.keys()` ordena chaves que parecem inteiros ("0", "1", ...) de forma
+    numérica crescente, ignorando a ordem de declaração. O json.loads do Python preserva
+    a declaração, então precisamos espelhar a semântica do JS para o manifesto bater.
+    """
+    int_keys = sorted((key for key in obj if key.isdigit()), key=int)
+    str_keys = [key for key in obj if not key.isdigit()]
+    return [(key, obj[key]) for key in int_keys + str_keys]
+
+
 def build_entries(numbers=None, letters=None):
-    """Manifesto determinístico: [{filename, text}, ...] na ordem de data.js."""
+    """Manifesto determinístico: [{filename, text}, ...] na ordem que o browser itera data.js."""
     if numbers is None or letters is None:
         numbers, letters = load_data()
     entries = []
-    for digit, item in numbers.items():
+    for digit, item in _js_object_items(numbers):
         entries.append({'filename': "%s.mp3" % digit, 'text': item['spoken']})
     entries.append({'filename': 'warning.mp3', 'text': WARNING_TEXT})
     for letter, letter_data in letters.items():
