@@ -74,7 +74,7 @@ Hoje cada letra do Alfabeto Divertido tem exatamente uma palavra fixa com um mp3
 **Acceptance Criteria**:
 
 1. WHEN um número é acionado após uma letra THEN o sistema SHALL exibir a contagem usando o singular da opção exibida daquela letra para 1 e o plural para 0 e 2 ou mais, acompanhada dos emojis daquela opção repetidos conforme a quantidade.  <!-- event-driven -->
-2. WHEN a combinação número+letra é exibida THEN o sistema SHALL reproduzir o áudio da combinação da opção correspondente (ex.: opção PEDRO da letra P com 3 → `audio/3_p_2.mp3`).  <!-- event-driven -->
+2. WHEN a combinação número+letra é exibida THEN o sistema SHALL reproduzir o áudio da combinação da opção correspondente (ex.: opção PEDRO, índice 1, da letra P com 3 → `audio/3_p_1.mp3`).  <!-- event-driven -->
 3. The system SHALL gerar o plural de cada opção explicitamente no cadastro de dados (incluindo plurais irregulares como LEÕES e SÓIS).  <!-- ubiquitous -->
 
 **Independent Test**: Tocar em P (sortear PEDRO) e depois 3 → palco mostra "3 PEDROS" com 3 emojis de menino e áudio "Três Pedros."

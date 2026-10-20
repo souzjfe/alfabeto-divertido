@@ -132,12 +132,12 @@ Geração dos mp3s de todas as opções.
 
 **Done when**:
 
-- [ ] `python3 generate_audio.py --list-files` imprime o manifesto JSON determinístico (2 execuções idênticas)
-- [ ] Geração pula arquivos já existentes; `--force` regenera tudo
-- [ ] Falha em 1 arquivo não interrompe os demais e é reportada com exit code != 0
-- [ ] Voz e ritmo inalterados
-- [ ] Gate check passes: `python3 -m unittest discover -s tests -p 'test_*.py'`
-- [ ] Test count: ≥ 6 testes python passam
+- [x] `python3 generate_audio.py --list-files` imprime o manifesto JSON determinístico (2 execuções idênticas)
+- [x] Geração pula arquivos já existentes; `--force` regenera tudo
+- [x] Falha em 1 arquivo não interrompe os demais e é reportada com exit code != 0
+- [x] Voz e ritmo inalterados
+- [x] Gate check passes: `python3 -m unittest discover -s tests -p 'test_*.py'` (9/9)
+- [x] Test count: 9 testes python passam (sem remoção silenciosa)
 
 **Tests**: unit
 **Gate**: quick
