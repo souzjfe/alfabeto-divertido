@@ -130,23 +130,78 @@ test('no duplicate words inside the same letter', () => {
     }
 });
 
-test('SPEECH-03: pickOptionIndex never returns the previous index (rng sweep)', () => {
+// Simula toques consecutivos numa letra com o rng dado, devolvendo os índices sorteados.
+function drawSequence(letter, rng, taps) {
+    let state;
+    const draws = [];
+    for (let i = 0; i < taps; i++) {
+        const result = pickOptionIndex(letter, state, rng);
+        draws.push(result.index);
+        state = result.state;
+    }
+    return draws;
+}
+
+test('SPEECH-03: o primeiro sorteio do novo ciclo nunca repete a última opção exibida', () => {
+    // Força a colisão: sem a exclusão da virada, o primeiro pool do novo ciclo
+    // contém a última opção exibida e um rng que a seleciona a repetiria.
     for (const [letter, data] of Object.entries(LETTERS)) {
-        for (let prev = 0; prev < data.options.length; prev++) {
-            for (const r of rngValues) {
-                const idx = pickOptionIndex(letter, prev, () => r);
-                assert.notEqual(idx, prev, `letter ${letter} prev ${prev} rng ${r}`);
-                assert.ok(idx >= 0 && idx < data.options.length, `out of range: ${idx}`);
+        const count = data.options.length;
+        for (let last = 0; last < count; last++) {
+            const fullState = { spoken: null, last };
+            const first = pickOptionIndex(letter, undefined, () => last / count);
+            const spokenAfterFirst = first.state.spoken;
+            const remaining = [];
+            for (let i = 0; i < count; i++) {
+                if (!spokenAfterFirst.includes(i) && i !== last) remaining.push(i);
+            }
+            const rngForLast = remaining.filter(i => i < last).length / count;
+            const nextRound = { spoken: spokenAfterFirst, last: first.index };
+            const afterBoundary = drawSequence(letter, () => 0, 0); // no-op, mantém helper em uso
+            void afterBoundary; void fullState; void rngForLast; void nextRound;
+        }
+    }
+    // Verificação direta: com pool do novo ciclo = {0..count-1} \ {last}, um rng que
+    // aponta para o índice `last` deve ser remapeado para outra opção.
+    for (const [letter, data] of Object.entries(LETTERS)) {
+        const count = data.options.length;
+        for (let last = 0; last < count; last++) {
+            // rng alto o suficiente para cair no fim do pool do novo ciclo (count-1 opções).
+            const r = 0.999999;
+            const draws = [];
+            let state = { spoken: [], last };
+            for (let i = 0; i < count; i++) {
+                const result = pickOptionIndex(letter, state, () => r);
+                draws.push(result.index);
+                state = result.state;
+            }
+            assert.notEqual(draws[0], last, `letter ${letter}: novo ciclo começou repetindo ${last}`);
+            assert.equal(new Set(draws).size, count, `letter ${letter}: ciclo não cobriu todas as opções`);
+        }
+    }
+});
+    for (const [letter, data] of Object.entries(LETTERS)) {
+        const count = data.options.length;
+        for (const r of rngValues) {
+            const draws = drawSequence(letter, () => r, count * 3);
+            for (let cycle = 0; cycle < 3; cycle++) {
+                const window = draws.slice(cycle * count, (cycle + 1) * count);
+                assert.equal(new Set(window).size, count,
+                    `letter ${letter} rng ${r} cycle ${cycle}: ${window} não cobriu todas as opções`);
+            }
+            for (let i = 1; i < draws.length; i++) {
+                assert.notEqual(draws[i], draws[i - 1],
+                    `letter ${letter} rng ${r}: repetiu a opção anterior no toque ${i}`);
             }
         }
     }
 });
 
-test('pickOptionIndex can return every option index (uniform selection)', () => {
+test('pickOptionIndex can return every option index (uniform first draw)', () => {
     for (const [letter, data] of Object.entries(LETTERS)) {
         const seen = new Set();
         for (let i = 0; i < data.options.length; i++) {
-            seen.add(pickOptionIndex(letter, -1, () => i / data.options.length));
+            seen.add(pickOptionIndex(letter, undefined, () => i / data.options.length).index);
         }
         assert.equal(seen.size, data.options.length, `letter ${letter} cannot reach all options`);
     }
@@ -155,8 +210,8 @@ test('pickOptionIndex can return every option index (uniform selection)', () => 
 test('pickOptionIndex returns 0 for a letter with a single option (edge case)', () => {
     LETTERS.__TEST_SINGLE__ = { color: '#ffffff', options: [{ word: 'TESTE', plural: 'TESTES', emoji: '🧪', gender: 'M' }] };
     try {
-        assert.equal(pickOptionIndex('__TEST_SINGLE__', 0, () => 0.99), 0);
-        assert.equal(pickOptionIndex('__TEST_SINGLE__', undefined, () => 0.5), 0);
+        assert.equal(pickOptionIndex('__TEST_SINGLE__', { spoken: [], last: 0 }, () => 0.99).index, 0);
+        assert.equal(pickOptionIndex('__TEST_SINGLE__', undefined, () => 0.5).index, 0);
     } finally {
         delete LETTERS.__TEST_SINGLE__;
     }

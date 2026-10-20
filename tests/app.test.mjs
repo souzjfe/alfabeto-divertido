@@ -152,6 +152,34 @@ test('SPEECH-03: toques repetidos nunca repetem a opção anterior', () => {
     }
 });
 
+test('SPEECH-03: um ciclo de toques fala todas as opções antes de repetir', () => {
+    const app = loadApp();
+    const count = data.LETTERS.O.options.length;
+    const cycle = [];
+    for (let i = 0; i < count; i++) {
+        app.tapKey('O');
+        cycle.push(app.stage.word());
+    }
+    assert.equal(new Set(cycle).size, count, `ciclo incompleto: ${cycle}`);
+
+    app.tapKey('O');
+    assert.notEqual(app.stage.word(), cycle[cycle.length - 1],
+        'o novo ciclo não pode começar repetindo a última opção do ciclo anterior');
+});
+
+test('SPEECH-03: combinações número+letra não consomem o ciclo da letra', () => {
+    const app = loadApp();
+    const count = data.LETTERS.O.options.length;
+    const seen = new Set();
+    for (let i = 0; i < count; i++) {
+        app.tapKey('O');
+        seen.add(app.stage.word());
+        app.tapKey('3');
+        assert.match(app.stage.word(), /^3 /);
+    }
+    assert.equal(seen.size, count, `ciclo incompleto com combos no meio: ${[...seen]}`);
+});
+
 test('SPEECH-09: letra + número mostra o plural da opção exibida com os emojis dela', () => {
     const app = loadApp();
     app.tapKey('P');

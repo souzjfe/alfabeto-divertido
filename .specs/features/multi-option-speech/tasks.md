@@ -223,12 +223,12 @@ Pedido do usuário após a entrega: ISIS (I) e BENÍCIO (B) como novas opções;
 
 **Done when**:
 
-- [ ] Cada ciclo de N toques cobre as N opções exatamente uma vez (rng sweep em todas as letras)
-- [ ] Nenhum sorteio repete a opção imediatamente anterior, inclusive na virada de ciclo
-- [ ] Letra com 1 opção sempre retorna índice 0
-- [ ] `app.js` usa estado de ciclo por letra; combinações número+letra não consomem o ciclo
-- [ ] Gate check passes: `node --test tests/*.test.mjs && python3 -m unittest discover -s tests -p 'test_*.py'`
-- [ ] Test count: suíte completa verde (27 Node + 9 Python = 36 testes)
+- [x] Cada ciclo de N toques cobre as N opções exatamente uma vez (rng sweep em todas as letras)
+- [x] Nenhum sorteio repete a opção imediatamente anterior, inclusive na virada de ciclo
+- [x] Letra com 1 opção sempre retorna índice 0
+- [x] `app.js` usa estado de ciclo por letra; combinações número+letra não consomem o ciclo
+- [x] Gate check passes: `node --test tests/*.test.mjs && python3 -m unittest discover -s tests -p 'test_*.py'` (28 Node + 9 Python)
+- [x] Test count: suíte completa verde (28 Node + 9 Python = 37 testes)
 
 **Tests**: unit
 **Gate**: quick

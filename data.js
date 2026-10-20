@@ -286,23 +286,44 @@ function getLetterOption(letterKey, optionIndex) {
     return LETTERS[letterKey].options[optionIndex];
 }
 
-// Sorteia um índice de opção; nunca repete o índice anterior quando há mais de uma opção.
-function pickOptionIndex(letterKey, previousIndex, rng) {
+// Sorteio em ciclo (lista de exclusão): cada toque sorteia uma opção ainda não falada
+// naquele ciclo; quando todas forem faladas, o ciclo reinicia excluindo apenas a última
+// opção exibida no primeiro sorteio do novo ciclo (nunca repete a imediatamente anterior).
+// Estado: { spoken: índices já falados no ciclo atual, last: último índice exibido }.
+function pickOptionIndex(letterKey, state, rng) {
     const count = LETTERS[letterKey].options.length;
     const rand = (rng || Math.random)();
     if (count <= 1) {
-        return 0;
+        return { index: 0, state: { spoken: [], last: 0 } };
     }
-    const hasValidPrevious = previousIndex !== undefined && previousIndex !== null &&
-        previousIndex >= 0 && previousIndex < count;
-    if (!hasValidPrevious) {
-        return Math.floor(rand * count);
+    const spoken = state && Array.isArray(state.spoken)
+        ? state.spoken.filter(i => i >= 0 && i < count)
+        : [];
+    const last = state && Number.isInteger(state.last) && state.last >= 0 && state.last < count
+        ? state.last
+        : null;
+
+    let pool = [];
+    for (let i = 0; i < count; i++) {
+        if (!spoken.includes(i)) pool.push(i);
     }
-    let idx = Math.floor(rand * (count - 1));
-    if (idx >= previousIndex) {
-        idx += 1;
+    if (pool.length === 0) {
+        // Ciclo completo: reinicia excluindo apenas a última opção exibida.
+        pool = [];
+        for (let i = 0; i < count; i++) {
+            if (i !== last) pool.push(i);
+        }
+    } else if (spoken.length === 0 && last !== null) {
+        // Primeiro sorteio do ciclo: nunca repete a última opção do ciclo anterior.
+        pool = pool.filter(i => i !== last);
     }
-    return idx;
+
+    const index = pool[Math.floor(rand * pool.length)];
+    const nextSpoken = [...spoken, index];
+    return {
+        index,
+        state: { spoken: nextSpoken.length >= count ? [] : nextSpoken, last: index }
+    };
 }
 
 // Opção 0 usa os mp3s já gravados (audio/m.mp3, audio/3_m.mp3);
