@@ -30,7 +30,7 @@ Implement these tasks with the `tlc-spec-driven` skill: **activate it by name an
 
 | Gate Level | When to Use | Command |
 | ---------- | ----------- | ------- |
-| Quick | Após tarefas com testes unitários | `node --test tests/ && python3 -m unittest discover -s tests -p 'test_*.py'` |
+| Quick | Após tarefas com testes unitários | `node --test tests/*.test.mjs && python3 -m unittest discover -s tests -p 'test_*.py'` |
 | Full | Após T4 (toda a suíte, inclui cobertura de mp3s) | mesmo do Quick (não há infra e2e no repo) |
 | Build | Fechamento de feature | Quick + `python3 <skill-dir>/scripts/validate_spec.py multi-option-speech --root .` |
 
@@ -161,10 +161,10 @@ Geração dos mp3s de todas as opções.
 
 **Done when**:
 
-- [ ] Script conclui sem falhas reportadas (exit 0)
-- [ ] `tests/audio.test.mjs` confere que os 1.441 arquivos do manifesto existem em `audio/`
-- [ ] Gate check passes: `node --test tests/ && python3 -m unittest discover -s tests -p 'test_*.py'`
-- [ ] Test count: suíte completa verde (≥ 25 testes)
+- [x] Script conclui sem falhas reportadas (exit 0) — 1.143 criados, 297 legados pulados
+- [x] `tests/audio.test.mjs` confere que os 1.441 arquivos do manifesto existem em `audio/`
+- [x] Gate check passes: `node --test tests/*.test.mjs && python3 -m unittest discover -s tests -p 'test_*.py'` (glob explícito: `node --test tests/` não resolve os `.mjs` no Node 22)
+- [x] Test count: suíte completa verde (25 Node + 9 Python = 34 testes)
 
 **Tests**: unit
 **Gate**: full

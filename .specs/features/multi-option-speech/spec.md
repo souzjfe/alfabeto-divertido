@@ -111,21 +111,21 @@ Hoje cada letra do Alfabeto Divertido tem exatamente uma palavra fixa com um mp3
 
 | Requirement ID | Story | Phase | Status |
 | -------------- | ----- | ----- | ------ |
-| SPEECH-01 | P1: Sorteio de opções por letra | - | Pending |
-| SPEECH-02 | P1: Sorteio de opções por letra | - | Pending |
-| SPEECH-03 | P1: Sorteio de opções por letra | - | Pending |
-| SPEECH-04 | P1: Sorteio de opções por letra | - | Pending |
-| SPEECH-05 | P1: Sorteio de opções por letra | - | Pending |
-| SPEECH-06 | P1: Sorteio de opções por letra | - | Pending |
-| SPEECH-07 | P1: Sorteio de opções por letra | - | Pending |
-| SPEECH-08 | P1: Sorteio de opções por letra | - | Pending |
-| SPEECH-09 | P2: Combinações número + letra | - | Pending |
-| SPEECH-10 | P2: Combinações número + letra | - | Pending |
-| SPEECH-11 | P2: Combinações número + letra | - | Pending |
-| SPEECH-12 | P3: Geração dos mp3s | - | Pending |
-| SPEECH-13 | P3: Geração dos mp3s | - | Pending |
-| SPEECH-14 | P3: Geração dos mp3s | - | Pending |
-| SPEECH-15 | P3: Geração dos mp3s | - | Pending |
+| SPEECH-01 | P1: Sorteio de opções por letra | - | Implementing |
+| SPEECH-02 | P1: Sorteio de opções por letra | - | Implementing |
+| SPEECH-03 | P1: Sorteio de opções por letra | - | Implementing |
+| SPEECH-04 | P1: Sorteio de opções por letra | - | Implementing |
+| SPEECH-05 | P1: Sorteio de opções por letra | - | Implementing |
+| SPEECH-06 | P1: Sorteio de opções por letra | - | Implementing |
+| SPEECH-07 | P1: Sorteio de opções por letra | - | Implementing |
+| SPEECH-08 | P1: Sorteio de opções por letra | - | Implementing |
+| SPEECH-09 | P2: Combinações número + letra | - | Implementing |
+| SPEECH-10 | P2: Combinações número + letra | - | Implementing |
+| SPEECH-11 | P2: Combinações número + letra | - | Implementing |
+| SPEECH-12 | P3: Geração dos mp3s | - | Implementing |
+| SPEECH-13 | P3: Geração dos mp3s | - | Implementing |
+| SPEECH-14 | P3: Geração dos mp3s | - | Implementing |
+| SPEECH-15 | P3: Geração dos mp3s | - | Implementing |
 
 **Coverage:** 15 total, 15 mapped to tasks (tasks.md), 0 unmapped.
 
