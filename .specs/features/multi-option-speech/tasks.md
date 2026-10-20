@@ -194,12 +194,12 @@ Pedido do usuário após a entrega: ISIS (I) e BENÍCIO (B) como novas opções;
 
 **Done when**:
 
-- [ ] B e I têm 6 opções; demais letras inalteradas; opção 0 de todas intacta
-- [ ] AURORA 👧, JOCA 👦, ISIS 👧 e BENÍCIO 👦 (AC P1-5)
-- [ ] `python3 generate_audio.py` exit 0 com exatamente 22 arquivos criados
-- [ ] Manifesto python = 1.463; testes cobrem "B de Benício.", "I de Isis.", "Uma Isis.", "Dois Benícios."
-- [ ] Gate check passes (full): `node --test tests/*.test.mjs && python3 -m unittest discover -s tests -p 'test_*.py'`
-- [ ] Test count: suíte completa verde (26 Node + 9 Python = 35 testes)
+- [x] B e I têm 6 opções; demais letras inalteradas; opção 0 de todas intacta
+- [x] AURORA 👧, JOCA 👦, ISIS 👧 e BENÍCIO 👦 (AC P1-5)
+- [x] `python3 generate_audio.py` exit 0 com exatamente 22 arquivos criados
+- [x] Manifesto python = 1.463; testes cobrem "B de Benício.", "I de Isis.", "Uma Isis.", "Dois Benícios."
+- [x] Gate check passes (full): `node --test tests/*.test.mjs && python3 -m unittest discover -s tests -p 'test_*.py'` (26 Node + 9 Python)
+- [x] Test count: suíte completa verde (26 Node + 9 Python = 35 testes)
 
 **Tests**: unit
 **Gate**: full

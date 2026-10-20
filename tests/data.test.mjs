@@ -58,7 +58,8 @@ const LEGACY_NUMBERS = {
 
 const MANDATORY_NAMES = {
     'A': ['ANTONELA', 'AURORA'],
-    'B': ['BIA'],
+    'B': ['BIA', 'BENÍCIO'],
+    'I': ['ISIS'],
     'J': ['JÚLIO', 'JOCA', 'JEFERSON'],
     'P': ['PEDRO', 'PATRÍCIA']
 };
@@ -82,6 +83,14 @@ test('SPEECH-05: mandatory names are options of their letters', () => {
             assert.ok(words.includes(name), `${name} missing from letter ${letter}`);
         }
     }
+});
+
+test('SPEECH-05: gender icons of the names', () => {
+    const emojiOf = (letter, word) => LETTERS[letter].options.find(o => o.word === word).emoji;
+    assert.equal(emojiOf('J', 'JOCA'), '👦');
+    assert.equal(emojiOf('A', 'AURORA'), '👧');
+    assert.equal(emojiOf('I', 'ISIS'), '👧');
+    assert.equal(emojiOf('B', 'BENÍCIO'), '👦');
 });
 
 test('SPEECH-06: option 0 matches the legacy word/plural/emoji/color', () => {
@@ -172,6 +181,10 @@ test('SPEECH-10: combo text uses singular for 1 and plural for 0 and 2+', () => 
     // Plural irregularo preservado (SPEECH-11).
     assert.equal(getComboDisplayText(2, 'L', 0), '2 LEÕES');
     assert.equal(getComboDisplayText(3, 'S', 0), '3 SÓIS');
+    // Plural invariante de nomes terminados em -s (SPEECH-11).
+    const isisIdx = LETTERS.I.options.findIndex(o => o.word === 'ISIS');
+    assert.equal(getComboDisplayText(1, 'I', isisIdx), '1 ISIS');
+    assert.equal(getComboDisplayText(2, 'I', isisIdx), '2 ISIS');
 });
 
 test('getLetterOption returns the requested option', () => {

@@ -28,10 +28,11 @@ class LoadDataTests(unittest.TestCase):
 class ManifestTests(unittest.TestCase):
     def test_manifest_has_every_expected_file(self):
         names = [e['filename'] for e in generate_audio.build_entries()]
-        # 10 números + warning + 26 letras × 5 opções × (1 letra + 10 combinações)
-        self.assertEqual(len(names), 1441)
+        # 10 números + warning + (24 letras × 5 opções + B e I × 6 opções) × (1 letra + 10 combinações)
+        self.assertEqual(len(names), 1463)
         self.assertEqual(len(set(names)), len(names), 'manifesto com arquivos duplicados')
-        for expected in ('0.mp3', '7.mp3', 'warning.mp3', 'm.mp3', '0_a.mp3', '3_m_2.mp3', '9_z_4.mp3'):
+        for expected in ('0.mp3', '7.mp3', 'warning.mp3', 'm.mp3', '0_a.mp3', '3_m_2.mp3', '9_z_4.mp3',
+                         'b_5.mp3', 'i_5.mp3', '9_b_5.mp3', '9_i_5.mp3'):
             self.assertIn(expected, names)
 
     def test_manifest_texts_match_spec(self):
@@ -47,6 +48,10 @@ class ManifestTests(unittest.TestCase):
         self.assertEqual(entries['3_p_1.mp3'], 'Três Pedros.')
         self.assertEqual(entries['0_m.mp3'], 'Zero Melissas.')
         self.assertEqual(entries['2_l.mp3'], 'Dois Leões.')
+        self.assertEqual(entries['b_5.mp3'], 'B de Benício.')
+        self.assertEqual(entries['i_5.mp3'], 'I de Isis.')
+        self.assertEqual(entries['1_i_5.mp3'], 'Uma Isis.')
+        self.assertEqual(entries['2_b_5.mp3'], 'Dois Benícios.')
 
     def test_manifest_is_deterministic(self):
         self.assertEqual(generate_audio.build_entries(), generate_audio.build_entries())

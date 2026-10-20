@@ -23,7 +23,7 @@ const LETTERS = {
         "options": [
             { "word": "ABELHA", "plural": "ABELHAS", "emoji": "🐝", "gender": "F" },
             { "word": "ANTONELA", "plural": "ANTONELAS", "emoji": "👧", "gender": "F" },
-            { "word": "AURORA", "plural": "AURORAS", "emoji": "🌅", "gender": "F" },
+            { "word": "AURORA", "plural": "AURORAS", "emoji": "👧", "gender": "F" },
             { "word": "AVIÃO", "plural": "AVIÕES", "emoji": "✈️", "gender": "M" },
             { "word": "ABACAXI", "plural": "ABACAXIS", "emoji": "🍍", "gender": "M" }
         ]
@@ -35,7 +35,8 @@ const LETTERS = {
             { "word": "BIA", "plural": "BIAS", "emoji": "👧", "gender": "F" },
             { "word": "BOLA", "plural": "BOLAS", "emoji": "⚽", "gender": "F" },
             { "word": "BALEIA", "plural": "BALEIAS", "emoji": "🐋", "gender": "F" },
-            { "word": "BANANA", "plural": "BANANAS", "emoji": "🍌", "gender": "F" }
+            { "word": "BANANA", "plural": "BANANAS", "emoji": "🍌", "gender": "F" },
+            { "word": "BENÍCIO", "plural": "BENÍCIOS", "emoji": "👦", "gender": "M" }
         ]
     },
     "C": {
@@ -105,7 +106,8 @@ const LETTERS = {
             { "word": "IGUANA", "plural": "IGUANAS", "emoji": "🦎", "gender": "F" },
             { "word": "IMÃ", "plural": "IMÃS", "emoji": "🧲", "gender": "M" },
             { "word": "IGREJA", "plural": "IGREJAS", "emoji": "⛪", "gender": "F" },
-            { "word": "INDÍGENA", "plural": "INDÍGENAS", "emoji": "🪶", "gender": "M" }
+            { "word": "INDÍGENA", "plural": "INDÍGENAS", "emoji": "🪶", "gender": "M" },
+            { "word": "ISIS", "plural": "ISIS", "emoji": "👧", "gender": "F" }
         ]
     },
     "J": {
@@ -113,7 +115,7 @@ const LETTERS = {
         "options": [
             { "word": "JACARÉ", "plural": "JACARÉS", "emoji": "🐊", "gender": "M" },
             { "word": "JÚLIO", "plural": "JÚLIOS", "emoji": "👦", "gender": "M" },
-            { "word": "JOCA", "plural": "JOCAS", "emoji": "🤡", "gender": "M" },
+            { "word": "JOCA", "plural": "JOCAS", "emoji": "👦", "gender": "M" },
             { "word": "JEFERSON", "plural": "JEFERSONS", "emoji": "👨", "gender": "M" },
             { "word": "JANELA", "plural": "JANELAS", "emoji": "🪟", "gender": "F" }
         ]
