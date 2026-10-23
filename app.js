@@ -6,7 +6,7 @@ let toastTimeout = null;
 let currentSpeechAudio = null;
 let currentlySpeaking = null;
 let lastLetterSelected = null;
-const lastOptionIndexByLetter = {};
+const drawStateByLetter = {};
 
 const melodyNotes = [
     60, 64, 67, 72,
@@ -207,10 +207,11 @@ function selectLetter(key) {
     }
 }
 
-// SPEECH-01/03: cada toque sorteia uma opção da letra, diferente da última exibida.
+// SPEECH-01/03: cada toque sorteia uma opção ainda não falada no ciclo da letra.
 function selectLetterOption(letter) {
-    const optionIndex = pickOptionIndex(letter, lastOptionIndexByLetter[letter]);
-    lastOptionIndexByLetter[letter] = optionIndex;
+    const draw = pickOptionIndex(letter, drawStateByLetter[letter]);
+    drawStateByLetter[letter] = draw.state;
+    const optionIndex = draw.index;
     lastLetterSelected = { letter, optionIndex };
 
     const option = getLetterOption(letter, optionIndex);
